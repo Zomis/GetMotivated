@@ -9,6 +9,7 @@ import androidx.compose.runtime.MutableState
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.unit.dp
 import org.jetbrains.compose.ui.tooling.preview.Preview
+import kotlin.math.round
 
 @Composable
 fun TaskSummaryEdit(taskViewModel: TaskViewModel) {
@@ -32,7 +33,8 @@ fun TaskSummaryEdit(taskViewModel: TaskViewModel) {
 @Composable
 private fun MotivationSlider(title: String, value: MutableState<Float>) {
     Row(modifier = Modifier.fillMaxWidth().padding(12.dp)) {
-        Text(title, modifier = Modifier.fillMaxWidth(0.3f))
+        val intValue = round(value.value * 100).toString() + "% "
+        Text(intValue + title, modifier = Modifier.fillMaxWidth(0.3f))
         Slider(value.value, { value.value = it }, modifier = Modifier.fillMaxWidth())
     }
 }

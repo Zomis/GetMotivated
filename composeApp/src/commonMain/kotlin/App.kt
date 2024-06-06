@@ -1,20 +1,20 @@
+import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.lazy.LazyColumn
+import androidx.compose.foundation.lazy.items
 import androidx.compose.material.Button
 import androidx.compose.material.MaterialTheme
 import androidx.compose.material.Text
 import androidx.compose.runtime.*
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.unit.dp
 import net.zomis.motivation.*
 import org.jetbrains.compose.ui.tooling.preview.Preview
 
 @Composable
 @Preview
-fun App() {
-    val tasksViewModel = remember {
-        TasksViewModel()
-    }
+fun App(tasksViewModel: TasksViewModel) {
     var screen by remember {
         mutableStateOf<ActiveScreen>(ActiveScreen.None)
     }
@@ -23,12 +23,14 @@ fun App() {
         Row(modifier = Modifier.fillMaxSize()) {
             Column(modifier = Modifier.fillMaxWidth(0.3f).fillMaxHeight()) {
                 Button({
-                    screen = ActiveScreen.Summary(TaskViewModel(tasksViewModel.createId()))
+                    screen = ActiveScreen.Summary(tasksViewModel.newTask())
                 }, modifier = Modifier.fillMaxWidth().padding(6.dp)) {
                     Text("Add task")
                 }
                 LazyColumn(modifier = Modifier.fillMaxSize()) {
-                    // tasks
+                    items(tasksViewModel.tasks.value, key = { it.taskId }) {
+                        TaskSummaryCard(it) { screen = ActiveScreen.Summary(it) }
+                    }
                 }
             }
             Column(modifier = Modifier.fillMaxWidth().fillMaxHeight()) {

@@ -5,10 +5,24 @@ import androidx.compose.runtime.mutableStateOf
 
 class TasksViewModel {
 
-    private val _tasks = mutableStateOf<List<MotivationTask>>(emptyList())
-    val tasks: State<List<MotivationTask>> = _tasks
+    private val _tasks = mutableStateOf<List<TaskViewModel>>(emptyList())
+    val tasks: State<List<TaskViewModel>> = _tasks
 
     @OptIn(ExperimentalStdlibApi::class)
-    fun createId(): String = tasks.value.hashCode().toHexString()
+    private fun createId(): String = tasks.value.hashCode().toHexString()
+
+    fun newTask(): TaskViewModel {
+        val vm = TaskViewModel(createId())
+        _tasks.value += vm
+        return vm
+    }
+
+    fun setTasks(tasks: List<MotivationTask>) {
+        _tasks.value = tasks.map {
+            TaskViewModel(it.taskId).apply { setFromData(it) }
+        }
+    }
+
+    fun serializedTasks(): List<MotivationTask> = _tasks.value.map { it.toData() }
 
 }

@@ -1,5 +1,8 @@
 package net.zomis.motivation
 
+import kotlinx.serialization.Serializable
+
+@Serializable
 data class MotivationTask(
     val taskId: String,
     val expectancy: Float,
