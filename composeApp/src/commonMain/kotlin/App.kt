@@ -1,33 +1,55 @@
-import androidx.compose.animation.AnimatedVisibility
-import androidx.compose.foundation.Image
-import androidx.compose.foundation.layout.Column
-import androidx.compose.foundation.layout.fillMaxWidth
+import androidx.compose.foundation.layout.*
+import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.material.Button
 import androidx.compose.material.MaterialTheme
 import androidx.compose.material.Text
 import androidx.compose.runtime.*
-import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
-import org.jetbrains.compose.resources.painterResource
+import androidx.compose.ui.unit.dp
+import net.zomis.motivation.*
 import org.jetbrains.compose.ui.tooling.preview.Preview
-
-import getmotivated.composeapp.generated.resources.Res
-import getmotivated.composeapp.generated.resources.compose_multiplatform
 
 @Composable
 @Preview
 fun App() {
+    val tasksViewModel = remember {
+        TasksViewModel()
+    }
+    var screen by remember {
+        mutableStateOf<ActiveScreen>(ActiveScreen.None)
+    }
+
     MaterialTheme {
-        var showContent by remember { mutableStateOf(false) }
-        Column(Modifier.fillMaxWidth(), horizontalAlignment = Alignment.CenterHorizontally) {
-            Button(onClick = { showContent = !showContent }) {
-                Text("Click me!")
+        Row(modifier = Modifier.fillMaxSize()) {
+            Column(modifier = Modifier.fillMaxWidth(0.3f).fillMaxHeight()) {
+                Button({
+                    screen = ActiveScreen.Summary(TaskViewModel(tasksViewModel.createId()))
+                }, modifier = Modifier.fillMaxWidth().padding(6.dp)) {
+                    Text("Add task")
+                }
+                LazyColumn(modifier = Modifier.fillMaxSize()) {
+                    // tasks
+                }
             }
-            AnimatedVisibility(showContent) {
-                val greeting = remember { Greeting().greet() }
-                Column(Modifier.fillMaxWidth(), horizontalAlignment = Alignment.CenterHorizontally) {
-                    Image(painterResource(Res.drawable.compose_multiplatform), null)
-                    Text("Compose: $greeting")
+            Column(modifier = Modifier.fillMaxWidth().fillMaxHeight()) {
+                Button({}, modifier = Modifier.fillMaxWidth().padding(6.dp)) {
+                    Text("Get motivated NOW!")
+                }
+
+                when (val it = screen) {
+                    ActiveScreen.None -> {}
+                    is ActiveScreen.Summary -> {
+                        // sliders and summary (title + what are you avoiding)
+                        TaskSummaryEdit(it.taskViewModel)
+                    }
+                    is ActiveScreen.GroupOverview -> {
+                        // overview of group (value, expectancy, impulsiveness...)
+                        GroupOverview(it.group)
+                    }
+                    is ActiveScreen.StepDetail -> {
+                        // specific task detailed information (+ possible text field for notes), e.g. "splash some water on your face"
+                        DetailView(it.detail)
+                    }
                 }
             }
         }
