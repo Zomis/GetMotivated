@@ -1,4 +1,3 @@
-import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.items
@@ -7,7 +6,6 @@ import androidx.compose.material.MaterialTheme
 import androidx.compose.material.Text
 import androidx.compose.runtime.*
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.unit.dp
 import net.zomis.motivation.*
 import org.jetbrains.compose.ui.tooling.preview.Preview
@@ -27,8 +25,12 @@ fun App(tasksViewModel: TasksViewModel) {
                 }, modifier = Modifier.fillMaxWidth().padding(6.dp)) {
                     Text("Add task")
                 }
+                val sortedTasks = derivedStateOf {
+                    tasksViewModel.tasks.value.sortedByDescending { it.motivation.value }
+                }
+
                 LazyColumn(modifier = Modifier.fillMaxSize()) {
-                    items(tasksViewModel.tasks.value, key = { it.taskId }) {
+                    items(sortedTasks.value, key = { it.taskId }) {
                         TaskSummaryCard(it) { screen = ActiveScreen.Summary(it) }
                     }
                 }
