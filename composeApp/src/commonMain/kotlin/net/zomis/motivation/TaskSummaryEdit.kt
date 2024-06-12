@@ -14,26 +14,34 @@ import kotlin.math.round
 @Composable
 fun TaskSummaryEdit(taskViewModel: TaskViewModel) {
     Column(modifier = Modifier.fillMaxWidth()) {
-        Row(modifier = Modifier.fillMaxWidth()) {
-            TextField(taskViewModel.title.value, { taskViewModel.title.value = it }, modifier = Modifier.weight(1f).padding(6.dp))
-            TextField(taskViewModel.description.value, { taskViewModel.description.value = it }, modifier = Modifier.weight(1f).padding(6.dp))
+        Column(modifier = Modifier.padding(start = 6.dp, end = 6.dp, bottom = 6.dp)) {
+            Text("Title")
+            TextField(taskViewModel.title.value, { taskViewModel.title.value = it }, modifier = Modifier.fillMaxWidth())
+            Spacer(modifier = Modifier.height(3.dp))
+            Text("What are you not motivated to do?")
+            TextField(taskViewModel.description.value, { taskViewModel.description.value = it }, modifier = Modifier.fillMaxWidth())
         }
 
-        MotivationSlider("Expectancy", taskViewModel.expectancy)
-        MotivationSlider("Value", taskViewModel.value)
-        MotivationSlider("Impulsiveness", taskViewModel.impulsiveness)
-        MotivationSlider("Delay", taskViewModel.delay)
+        Column(modifier = Modifier.padding(6.dp)) {
+            MotivationSlider("Expectancy", taskViewModel.expectancy)
+            MotivationSlider("Value", taskViewModel.value)
+            MotivationSlider("Impulsiveness", taskViewModel.impulsiveness)
+            MotivationSlider("Delay", taskViewModel.delay)
+        }
 
-        Spacer(modifier = Modifier.height(12.dp))
-        Text("Motivation")
-        Text(taskViewModel.motivation.value.toString())
+        Column(modifier = Modifier.padding(6.dp)) {
+            Text("Motivation")
+            Text(taskViewModel.motivation.value.toString())
+            Text("Recommended improvements")
+            Text(taskViewModel.improvements.value.toString())
+        }
     }
 }
 
 @Composable
 private fun MotivationSlider(title: String, value: MutableState<Float>) {
-    Row(modifier = Modifier.fillMaxWidth().padding(12.dp)) {
-        val intValue = round(value.value * 100).toString() + "% "
+    Row(modifier = Modifier.fillMaxWidth().padding(vertical = 3.dp)) {
+        val intValue = round(value.value * 1000).div(10).toString() + "% "
         Text(intValue + title, modifier = Modifier.fillMaxWidth(0.3f))
         Slider(value.value, { value.value = it }, modifier = Modifier.fillMaxWidth())
     }

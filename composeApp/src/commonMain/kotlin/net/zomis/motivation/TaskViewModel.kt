@@ -2,7 +2,8 @@ package net.zomis.motivation
 
 import androidx.compose.runtime.derivedStateOf
 import androidx.compose.runtime.mutableStateOf
-import kotlin.math.exp
+import net.zomis.motivation.MotivationGroup.*
+import kotlin.math.absoluteValue
 import kotlin.math.round
 
 class TaskViewModel(val taskId: String) {
@@ -16,7 +17,26 @@ class TaskViewModel(val taskId: String) {
     val description = mutableStateOf("Description")
 
     val motivation = derivedStateOf {
-        (expectancy.value * value.value) / (1 + impulsiveness.value * delay.value)
+        motivation(expectancy.value, value.value, impulsiveness.value, delay.value)
+    }
+
+    private fun motivation(expectancy: Float, value: Float, impulsiveness: Float, delay: Float): Float
+        = (expectancy * value) / (1 + impulsiveness * delay)
+
+    private fun motivationDelta(group: MotivationGroup): Float {
+        val h = if (group.positive) .0001f else -.0001f
+        val fxh = when (group) {
+            Expectancy -> motivation(expectancy.value + h, value.value, impulsiveness.value, delay.value)
+            Value -> motivation(expectancy.value, value.value + h, impulsiveness.value, delay.value)
+            Impulsiveness -> motivation(expectancy.value, value.value, impulsiveness.value + h, delay.value)
+            Delay -> motivation(expectancy.value, value.value, impulsiveness.value, delay.value + h)
+        }
+        val fx = motivation.value
+        return (fxh - fx) / h.absoluteValue
+    }
+
+    val improvements = derivedStateOf {
+        MotivationGroup.entries.map { it to motivationDelta(it) }.sortedByDescending { it.second }
     }
 
     fun setFromData(task: MotivationTask) {
