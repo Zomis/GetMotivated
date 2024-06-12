@@ -32,7 +32,7 @@ pipeline {
             }
             steps {
                 sh 'rm -rf /home/zomis/www/getmotivated'
-                sh 'cp -r composeApp/build/dist /home/zomis/www/getmotivated'
+                sh 'cp -r composeApp/build/dist/wasmJs/productionExecutable/* /home/zomis/www/jenkins/getmotivated'
             }
         }
     }
