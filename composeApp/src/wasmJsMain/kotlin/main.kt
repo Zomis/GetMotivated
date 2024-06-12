@@ -8,6 +8,7 @@ import kotlinx.browser.window
 import kotlinx.coroutines.FlowPreview
 import kotlinx.coroutines.delay
 import kotlinx.coroutines.flow.*
+import kotlinx.coroutines.launch
 import kotlinx.serialization.encodeToString
 import kotlinx.serialization.json.Json
 import net.zomis.motivation.MotivationTask
@@ -20,8 +21,10 @@ fun main() {
     ComposeViewport(document.body!!) {
         val viewModel = remember { TasksViewModel() }
         LaunchedEffect(Unit) {
-            val data = localStorage["tasks"] ?: return@LaunchedEffect
-            viewModel.read(data)
+            launch {
+                val data = localStorage["tasks"] ?: return@launch
+                viewModel.read(data)
+            }.join()
 
             // Periodically save
             val flow: Flow<List<MotivationTask>> = flow {
